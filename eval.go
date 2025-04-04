@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aymerick/raymond/ast"
+	"github.com/mbleigh/raymond/ast"
 )
 
 var (
@@ -42,22 +42,26 @@ type evalVisitor struct {
 
 	// used for info on panic
 	curNode ast.Node
+
+	// execution options
+	execOptions *ExecOptions
 }
 
 // NewEvalVisitor instanciate a new evaluation visitor with given context and initial private data frame
 //
 // If privData is nil, then a default data frame is created
-func newEvalVisitor(tpl *Template, ctx interface{}, privData *DataFrame) *evalVisitor {
+func newEvalVisitor(tpl *Template, ctx interface{}, privData *DataFrame, execOptions *ExecOptions) *evalVisitor {
 	frame := privData
 	if frame == nil {
 		frame = NewDataFrame()
 	}
 
 	return &evalVisitor{
-		tpl:       tpl,
-		ctx:       []reflect.Value{reflect.ValueOf(ctx)},
-		dataFrame: frame,
-		exprFunc:  make(map[*ast.Expression]bool),
+		tpl:         tpl,
+		ctx:         []reflect.Value{reflect.ValueOf(ctx)},
+		dataFrame:   frame,
+		exprFunc:    make(map[*ast.Expression]bool),
+		execOptions: execOptions,
 	}
 }
 
@@ -802,6 +806,9 @@ func (v *evalVisitor) VisitMustache(node *ast.MustacheStatement) interface{} {
 
 	// get string value
 	str := Str(expr)
+	if v.execOptions != nil {
+		node.Unescaped = v.execOptions.NoEscape
+	}
 	if !isSafe && !node.Unescaped {
 		// escape html
 		str = Escape(str)
