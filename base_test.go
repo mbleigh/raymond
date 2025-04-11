@@ -7,13 +7,14 @@ import (
 )
 
 type Test struct {
-	name     string
-	input    string
-	data     interface{}
-	privData map[string]interface{}
-	helpers  map[string]interface{}
-	partials map[string]string
-	output   interface{}
+	name        string
+	input       string
+	data        interface{}
+	privData    map[string]interface{}
+	helpers     map[string]interface{}
+	partials    map[string]string
+	execOptions *ExecOptions
+	output      interface{}
 }
 
 func launchTests(t *testing.T, tests []Test) {
@@ -48,8 +49,13 @@ func launchTests(t *testing.T, tests []Test) {
 				}
 			}
 
+			var execOptions *ExecOptions
+			if test.execOptions != nil {
+				execOptions = test.execOptions
+			}
+
 			// render template
-			output, err := tpl.ExecWith(test.data, privData)
+			output, err := tpl.ExecWith(test.data, privData, execOptions)
 			if err != nil {
 				t.Errorf("Test '%s' failed\ninput:\n\t'%s'\ndata:\n\t%s\nerror:\n\t%s\nAST:\n\t%s", test.name, test.input, Str(test.data), err, tpl.PrintAST())
 			} else {
@@ -114,8 +120,13 @@ func launchErrorTests(t *testing.T, tests []Test) {
 				}
 			}
 
+			var execOptions *ExecOptions
+			if test.execOptions != nil {
+				execOptions = test.execOptions
+			}
+
 			// render template
-			output, err := tpl.ExecWith(test.data, privData)
+			output, err := tpl.ExecWith(test.data, privData, execOptions)
 			if err == nil {
 				t.Errorf("Test '%s' failed - Error expected\ninput:\n\t'%s'\ngot\n\t%q\nAST:\n%q", test.name, test.input, output, tpl.PrintAST())
 			} else {

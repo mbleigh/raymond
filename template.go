@@ -7,8 +7,8 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/aymerick/raymond/ast"
-	"github.com/aymerick/raymond/parser"
+	"github.com/mbleigh/raymond/ast"
+	"github.com/mbleigh/raymond/parser"
 )
 
 // Template represents a handlebars template.
@@ -18,6 +18,10 @@ type Template struct {
 	helpers  map[string]reflect.Value
 	partials map[string]*partial
 	mutex    sync.RWMutex // protects helpers and partials
+}
+
+type ExecOptions struct {
+	NoEscape bool
 }
 
 // newTemplate instanciate a new template without parsing it
@@ -191,7 +195,7 @@ func (tpl *Template) RegisterPartialTemplate(name string, template *Template) {
 
 // Exec evaluates template with given context.
 func (tpl *Template) Exec(ctx interface{}) (result string, err error) {
-	return tpl.ExecWith(ctx, nil)
+	return tpl.ExecWith(ctx, nil, nil)
 }
 
 // MustExec evaluates template with given context. It panics on error.
@@ -204,7 +208,7 @@ func (tpl *Template) MustExec(ctx interface{}) string {
 }
 
 // ExecWith evaluates template with given context and private data frame.
-func (tpl *Template) ExecWith(ctx interface{}, privData *DataFrame) (result string, err error) {
+func (tpl *Template) ExecWith(ctx interface{}, privData *DataFrame, execOptions *ExecOptions) (result string, err error) {
 	defer errRecover(&err)
 
 	// parses template if necessary
@@ -214,7 +218,7 @@ func (tpl *Template) ExecWith(ctx interface{}, privData *DataFrame) (result stri
 	}
 
 	// setup visitor
-	v := newEvalVisitor(tpl, ctx, privData)
+	v := newEvalVisitor(tpl, ctx, privData, execOptions)
 
 	// visit AST
 	result, _ = tpl.program.Accept(v).(string)

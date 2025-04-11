@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/aymerick/raymond"
+	"github.com/mbleigh/raymond"
 )
 
 // cf. https://github.com/aymerick/go-fuzz-tests/raymond
@@ -65,7 +65,7 @@ func launchTests(t *testing.T, tests []Test) {
 			}
 
 			// render template
-			output, err := tpl.ExecWith(test.data, privData)
+			output, err := tpl.ExecWith(test.data, privData, nil)
 			if err != nil {
 				t.Errorf("Test '%s' failed\ninput:\n\t'%s'\ndata:\n\t%s\nerror:\n\t%s\nAST:\n\t%s", test.name, test.input, raymond.Str(test.data), err, tpl.PrintAST())
 			} else {

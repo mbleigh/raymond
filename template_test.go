@@ -131,7 +131,7 @@ func ExampleTemplate_ExecWith() {
 	frame.Set("baz", map[string]string{"bat": "unicorns"})
 
 	// evaluate template
-	output, err := tpl.ExecWith(ctx, frame)
+	output, err := tpl.ExecWith(ctx, frame, nil)
 	if err != nil {
 		panic(err)
 	}

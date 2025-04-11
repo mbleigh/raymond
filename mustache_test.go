@@ -140,7 +140,7 @@ var mustacheLambdasTests = []Test{
 		"Interpolation",
 		"Hello, {{lambda}}!",
 		map[string]interface{}{"lambda": func() string { return "world" }},
-		nil, nil, nil,
+		nil, nil, nil, nil,
 		"Hello, world!",
 	},
 
@@ -162,7 +162,7 @@ var mustacheLambdasTests = []Test{
 			musTestLambdaInterMult++
 			return Str(musTestLambdaInterMult)
 		}},
-		nil, nil, nil,
+		nil, nil, nil, nil,
 		"1 == 2 == 3",
 	},
 
@@ -170,7 +170,7 @@ var mustacheLambdasTests = []Test{
 		"Escaping",
 		"<{{lambda}}{{{lambda}}}",
 		map[string]interface{}{"lambda": func() string { return ">" }},
-		nil, nil, nil,
+		nil, nil, nil, nil,
 		"<&gt;>",
 	},
 
@@ -208,7 +208,7 @@ var mustacheLambdasTests = []Test{
 		map[string]interface{}{"lambda": func(options *Options) string {
 			return "__" + options.Fn() + "__"
 		}},
-		nil, nil, nil,
+		nil, nil, nil, nil,
 		"__FILE__ != __LINE__",
 	},
 
