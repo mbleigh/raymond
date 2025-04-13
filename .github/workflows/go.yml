@@ -1,0 +1,34 @@
+name: Go checks
+
+on: pull_request
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Track only the latest 2 stable versions of Go.
+        go-version: ["1.23.x", "1.24.x"]
+      fail-fast: false
+
+    name: Go ${{ matrix.go-version }} Tests
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@main
+
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@main
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+
+      - name: Check build
+        run: go build -v ./...
+
+      - name: Run tests
+        run: go test -v ./...
+
+      - name: Run vulncheck
+        run: govulncheck ./...
